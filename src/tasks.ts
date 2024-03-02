@@ -22,4 +22,36 @@ export async function getTasks(query?: string): Promise<Task[]> {
   
     return tasks.sort(sortBy("last", "createdAt"));
   }
+
+  export async function createTask(): Promise<Task> {
+    const newTask: Task = {
+      id: Math.random().toString(36).substring(2, 9),
+      title: "No Title",
+      description: "No Description",
+      completed: false,
+    };
+    let tasks = await getTasks();
+    tasks.unshift(newTask);
+    await setTasks(tasks);
+    return newTask;
+  }
+
+  export async function getTask(id?: string): Promise<Task | null> {
+    let tasks = await getTasks();
+    let task = tasks.find((task) => task.id === id);
+    return task ?? null;
+  }
+  
+  export async function updateTask(
+    id: string,
+    updates: Partial<Task>
+  ): Promise<Task> {
+    let tasks = await getTasks();
+    let task = tasks.find((task) => task.id === id);
+    if (!task) throw new Error("No task found for " + id);
+    Object.assign(task, updates);
+    await setTasks(tasks);
+    return task;
+  }
+  
   
