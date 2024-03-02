@@ -55,3 +55,27 @@ export async function getTasks(query?: string): Promise<Task[]> {
   }
   
   
+export async function completeTask(id?: string): Promise<Task> {
+    let tasks = await getTasks();
+    let task = tasks.find((task) => task.id === id);
+    if (!task) throw new Error("No task found for " + id);
+    task.completed = !task.completed;
+    await setTasks(tasks);
+    return task;
+  }
+  
+  export async function destroyTask(id: string): Promise<boolean> {
+    let tasks = await getTasks();
+    let index = tasks.findIndex((task) => task.id === id);
+    if (index > -1) {
+      tasks.splice(index, 1);
+      await setTasks(tasks);
+      return true;
+    }
+    return false;
+  }
+  
+  function setTasks(tasks: Task[]): void {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+  }
+  
