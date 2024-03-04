@@ -34,7 +34,6 @@ const Root = () => {
       <div id="sidebar">
         <div>
           <SearchForm query={q} />
-
         </div>
         <nav>
           <button onClick={() => setFilter("all")}>Show All</button>
