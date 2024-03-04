@@ -48,7 +48,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   stripBasename: function() { return /* binding */ stripBasename; }
 /* harmony export */ });
 /**
- * @remix-run/router v1.15.1
+ * @remix-run/router v1.15.2
  *
  * Copyright (c) Remix Software Inc.
  *
@@ -2080,7 +2080,7 @@ function createRouter(init) {
     // preserving any new action data or existing action data (in the case of
     // a revalidation interrupting an actionReload)
     // If we have partialHydration enabled, then don't update the state for the
-    // initial data load since iot's not a "navigation"
+    // initial data load since it's not a "navigation"
     if (!isUninterruptedRevalidation && (!future.v7_partialHydration || !initialHydration)) {
       revalidatingFetchers.forEach(rf => {
         let fetcher = state.fetchers.get(rf.key);
@@ -2166,6 +2166,18 @@ function createRouter(init) {
         }
       });
     });
+    // During partial hydration, preserve SSR errors for routes that don't re-run
+    if (future.v7_partialHydration && initialHydration && state.errors) {
+      Object.entries(state.errors).filter(_ref2 => {
+        let [id] = _ref2;
+        return !matchesToLoad.some(m => m.route.id === id);
+      }).forEach(_ref3 => {
+        let [routeId, error] = _ref3;
+        errors = Object.assign(errors || {}, {
+          [routeId]: error
+        });
+      });
+    }
     let updatedFetchers = markFetchRedirectsDone();
     let didAbortFetchLoads = abortStaleFetchLoads(pendingNavigationLoadId);
     let shouldUpdateFetchers = updatedFetchers || didAbortFetchLoads || revalidatingFetchers.length > 0;
@@ -2708,12 +2720,12 @@ function createRouter(init) {
       blockers
     });
   }
-  function shouldBlockNavigation(_ref2) {
+  function shouldBlockNavigation(_ref4) {
     let {
       currentLocation,
       nextLocation,
       historyAction
-    } = _ref2;
+    } = _ref4;
     if (blockerFunctions.size === 0) {
       return;
     }
@@ -3324,8 +3336,8 @@ function normalizeNavigateOptions(normalizeFormMethod, isFetcher, path, opts) {
       }
       let text = typeof opts.body === "string" ? opts.body : opts.body instanceof FormData || opts.body instanceof URLSearchParams ?
       // https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#plain-text-form-data
-      Array.from(opts.body.entries()).reduce((acc, _ref3) => {
-        let [name, value] = _ref3;
+      Array.from(opts.body.entries()).reduce((acc, _ref5) => {
+        let [name, value] = _ref5;
         return "" + acc + name + "=" + value + "\n";
       }, "") : String(opts.body);
       return {
@@ -4382,45 +4394,43 @@ var ErrorPage = function ErrorPage() {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/dist/index.js");
-/* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/dist/react-redux.mjs");
-/* harmony import */ var _redux_slice__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../redux/slice */ "./src/redux/slice.ts");
-/* harmony import */ var _forms_DeleteForm__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./forms/DeleteForm */ "./src/components/forms/DeleteForm.tsx");
-
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/dist/index.js");
+/* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/dist/react-redux.mjs");
+/* harmony import */ var _redux_slice__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../redux/slice */ "./src/redux/slice.ts");
+/* harmony import */ var _forms_DeleteForm__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./forms/DeleteForm */ "./src/components/forms/DeleteForm.tsx");
+/* provided dependency */ var React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 
 
 
 function Task(_ref) {
   var task = _ref.task;
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(CheckBox, {
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(CheckBox, {
     task: task
-  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_3__.NavLink, {
+  }), /*#__PURE__*/React.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_2__.NavLink, {
     to: "tasks/".concat(task.id)
-  }, task.title ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, task.title) : /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", null, "No Title"), ''), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_3__.Form, {
+  }, task.title ? /*#__PURE__*/React.createElement(React.Fragment, null, task.title) : /*#__PURE__*/React.createElement("i", null, "No Title"), ''), /*#__PURE__*/React.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_2__.Form, {
     action: "tasks/".concat(task.id, "/edit")
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", {
+  }, /*#__PURE__*/React.createElement("button", {
     type: "submit"
-  }, "Edit")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_forms_DeleteForm__WEBPACK_IMPORTED_MODULE_2__["default"], {
+  }, "Edit")), /*#__PURE__*/React.createElement(_forms_DeleteForm__WEBPACK_IMPORTED_MODULE_1__["default"], {
     task: task
   }));
 }
 function CheckBox(_ref2) {
   var task = _ref2.task;
-  var fetcher = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_3__.useFetcher)();
-  var dispatch = (0,react_redux__WEBPACK_IMPORTED_MODULE_4__.useDispatch)();
+  var fetcher = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_2__.useFetcher)();
+  var dispatch = (0,react_redux__WEBPACK_IMPORTED_MODULE_3__.useDispatch)();
   var isCompleted = task.completed;
   var handleClick = function handleClick(e) {
-    dispatch((0,_redux_slice__WEBPACK_IMPORTED_MODULE_1__.completeTask)({
+    dispatch((0,_redux_slice__WEBPACK_IMPORTED_MODULE_0__.completeTask)({
       id: task.id
     }));
   };
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(fetcher.Form, {
+  return /*#__PURE__*/React.createElement(fetcher.Form, {
     method: "post",
     action: "tasks/".concat(task.id, "/complete")
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", {
+  }, /*#__PURE__*/React.createElement("button", {
     name: "isCompleted",
     value: isCompleted ? 'true' : 'false',
     onClick: handleClick
@@ -4604,64 +4614,6 @@ function EditForm() {
 
 /***/ }),
 
-/***/ "./src/components/forms/NewForm.tsx":
-/*!******************************************!*\
-  !*** ./src/components/forms/NewForm.tsx ***!
-  \******************************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js");
-/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
-/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/dist/index.js");
-/* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/dist/react-redux.mjs");
-/* harmony import */ var _redux_slice__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../redux/slice */ "./src/redux/slice.ts");
-/* harmony import */ var _tasks__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../tasks */ "./src/tasks.ts");
-
-
-
-
-
-
-
-function NewForm() {
-  var dispatch = (0,react_redux__WEBPACK_IMPORTED_MODULE_5__.useDispatch)();
-  var handleClick = /*#__PURE__*/function () {
-    var _ref = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_1___default().mark(function _callee(e) {
-      var task;
-      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_1___default().wrap(function _callee$(_context) {
-        while (1) switch (_context.prev = _context.next) {
-          case 0:
-            _context.next = 2;
-            return (0,_tasks__WEBPACK_IMPORTED_MODULE_4__.createTask)();
-          case 2:
-            task = _context.sent;
-            dispatch((0,_redux_slice__WEBPACK_IMPORTED_MODULE_3__.addTask)(task));
-          case 4:
-          case "end":
-            return _context.stop();
-        }
-      }, _callee);
-    }));
-    return function handleClick(_x) {
-      return _ref.apply(this, arguments);
-    };
-  }();
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default().createElement((react__WEBPACK_IMPORTED_MODULE_2___default().Fragment), null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default().createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_6__.Form, {
-    method: "post"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default().createElement("button", {
-    onClick: handleClick,
-    type: "submit"
-  }, "New")));
-}
-/* harmony default export */ __webpack_exports__["default"] = (NewForm);
-
-/***/ }),
-
 /***/ "./src/components/forms/SearchForm.tsx":
 /*!*********************************************!*\
   !*** ./src/components/forms/SearchForm.tsx ***!
@@ -4784,6 +4736,27 @@ var _tasksSlice$actions = tasksSlice.actions,
 
 /***/ }),
 
+/***/ "./src/redux/store.ts":
+/*!****************************!*\
+  !*** ./src/redux/store.ts ***!
+  \****************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _reduxjs_toolkit__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @reduxjs/toolkit */ "./node_modules/@reduxjs/toolkit/dist/redux-toolkit.modern.mjs");
+/* harmony import */ var _slice__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./slice */ "./src/redux/slice.ts");
+
+
+var store = (0,_reduxjs_toolkit__WEBPACK_IMPORTED_MODULE_1__.configureStore)({
+  reducer: {
+    slice: _slice__WEBPACK_IMPORTED_MODULE_0__["default"]
+  }
+});
+/* harmony default export */ __webpack_exports__["default"] = (store);
+
+/***/ }),
+
 /***/ "./src/routes/complete.tsx":
 /*!*********************************!*\
   !*** ./src/routes/complete.tsx ***!
@@ -4843,13 +4816,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js");
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! react-router-dom */ "./node_modules/@remix-run/router/dist/router.js");
-/* harmony import */ var _tasks__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../tasks */ "./src/tasks.ts");
-/* harmony import */ var _components_forms_EditForm__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../components/forms/EditForm */ "./src/components/forms/EditForm.tsx");
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
-
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! react-router-dom */ "./node_modules/@remix-run/router/dist/router.js");
+/* harmony import */ var _tasks__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../tasks */ "./src/tasks.ts");
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
+/* harmony import */ var _components_forms_EditForm__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../components/forms/EditForm */ "./src/components/forms/EditForm.tsx");
+/* provided dependency */ var React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 
 
@@ -4866,12 +4837,12 @@ function _action() {
       while (1) switch (_context.prev = _context.next) {
         case 0:
           request = _ref.request;
-          _useParams = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_5__.useParams)(), taskId = _useParams.taskId;
+          _useParams = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_4__.useParams)(), taskId = _useParams.taskId;
           if (!(taskId === undefined)) {
             _context.next = 4;
             break;
           }
-          return _context.abrupt("return", (0,react_router_dom__WEBPACK_IMPORTED_MODULE_6__.redirect)("/"));
+          return _context.abrupt("return", (0,react_router_dom__WEBPACK_IMPORTED_MODULE_5__.redirect)("/"));
         case 4:
           _context.next = 6;
           return request.formData();
@@ -4879,9 +4850,9 @@ function _action() {
           formData = _context.sent;
           updates = Object.fromEntries(formData);
           _context.next = 10;
-          return (0,_tasks__WEBPACK_IMPORTED_MODULE_3__.updateTask)(taskId, updates);
+          return (0,_tasks__WEBPACK_IMPORTED_MODULE_2__.updateTask)(taskId, updates);
         case 10:
-          return _context.abrupt("return", (0,react_router_dom__WEBPACK_IMPORTED_MODULE_6__.redirect)("/tasks/".concat(taskId)));
+          return _context.abrupt("return", (0,react_router_dom__WEBPACK_IMPORTED_MODULE_5__.redirect)("/tasks/".concat(taskId)));
         case 11:
         case "end":
           return _context.stop();
@@ -4891,7 +4862,7 @@ function _action() {
   return _action.apply(this, arguments);
 }
 var EditTask = function EditTask() {
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default().createElement(_components_forms_EditForm__WEBPACK_IMPORTED_MODULE_4__["default"], null);
+  return /*#__PURE__*/React.createElement(_components_forms_EditForm__WEBPACK_IMPORTED_MODULE_3__["default"], null);
 };
 
 /* harmony default export */ __webpack_exports__["default"] = (EditTask);
@@ -4932,15 +4903,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! react-router-dom */ "./node_modules/@remix-run/router/dist/router.js");
-/* harmony import */ var _components_forms_NewForm__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../components/forms/NewForm */ "./src/components/forms/NewForm.tsx");
-/* harmony import */ var match_sorter__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! match-sorter */ "./node_modules/match-sorter/dist/match-sorter.esm.js");
-/* harmony import */ var _components_TaskList__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../components/TaskList */ "./src/components/TaskList.tsx");
-/* harmony import */ var _tasks__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../tasks */ "./src/tasks.ts");
-/* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/dist/react-redux.mjs");
-/* harmony import */ var _components_forms_SearchForm__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../components/forms/SearchForm */ "./src/components/forms/SearchForm.tsx");
-
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! react-router-dom */ "./node_modules/@remix-run/router/dist/router.js");
+/* harmony import */ var match_sorter__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! match-sorter */ "./node_modules/match-sorter/dist/match-sorter.esm.js");
+/* harmony import */ var _components_TaskList__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../components/TaskList */ "./src/components/TaskList.tsx");
+/* harmony import */ var _tasks__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../tasks */ "./src/tasks.ts");
+/* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/dist/react-redux.mjs");
+/* harmony import */ var _components_forms_SearchForm__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../components/forms/SearchForm */ "./src/components/forms/SearchForm.tsx");
+/* provided dependency */ var React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 
 
@@ -4952,19 +4922,19 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var Root = function Root() {
-  var _ref = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_9__.useLoaderData)(),
+  var _ref = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_8__.useLoaderData)(),
     q = _ref.q;
-  var tasks = (0,react_redux__WEBPACK_IMPORTED_MODULE_10__.useSelector)(function (state) {
+  var tasks = (0,react_redux__WEBPACK_IMPORTED_MODULE_9__.useSelector)(function (state) {
     return state.slice.tasks;
   });
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_3__.useState)("all"),
     _useState2 = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__["default"])(_useState, 2),
     filter = _useState2[0],
     setFilter = _useState2[1];
-  var tasksByQuery = q ? (0,match_sorter__WEBPACK_IMPORTED_MODULE_5__.matchSorter)(tasks, q, {
+  var tasksByQuery = q ? (0,match_sorter__WEBPACK_IMPORTED_MODULE_4__.matchSorter)(tasks, q, {
     keys: ["title", "description"]
   }) : tasks;
-  var navigation = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_9__.useNavigation)();
+  var navigation = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_8__.useNavigation)();
   var filteredTasks = tasksByQuery.filter(function (task) {
     if (filter === "completed") {
       return task.completed;
@@ -4973,28 +4943,28 @@ var Root = function Root() {
     }
     return true;
   });
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement((react__WEBPACK_IMPORTED_MODULE_3___default().Fragment), null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement("div", {
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     id: "sidebar"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_components_forms_SearchForm__WEBPACK_IMPORTED_MODULE_8__["default"], {
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(_components_forms_SearchForm__WEBPACK_IMPORTED_MODULE_7__["default"], {
     query: q
-  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_components_forms_NewForm__WEBPACK_IMPORTED_MODULE_4__["default"], null)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement("nav", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement("button", {
+  })), /*#__PURE__*/React.createElement("nav", null, /*#__PURE__*/React.createElement("button", {
     onClick: function onClick() {
       return setFilter("all");
     }
-  }, "Show All"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement("button", {
+  }, "Show All"), /*#__PURE__*/React.createElement("button", {
     onClick: function onClick() {
       return setFilter("completed");
     }
-  }, "Show Completed"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement("button", {
+  }, "Show Completed"), /*#__PURE__*/React.createElement("button", {
     onClick: function onClick() {
       return setFilter("incomplete");
     }
-  }, "Show Incomplete"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_components_TaskList__WEBPACK_IMPORTED_MODULE_6__["default"], {
+  }, "Show Incomplete"), /*#__PURE__*/React.createElement(_components_TaskList__WEBPACK_IMPORTED_MODULE_5__["default"], {
     tasks: filteredTasks
-  }))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement("div", {
+  }))), /*#__PURE__*/React.createElement("div", {
     id: "detail",
     className: navigation.state === "loading" ? "loading" : ""
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3___default().createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_9__.Outlet, null)));
+  }, /*#__PURE__*/React.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_8__.Outlet, null)));
 };
 function action() {
   return _action.apply(this, arguments);
@@ -5006,10 +4976,10 @@ function _action() {
       while (1) switch (_context.prev = _context.next) {
         case 0:
           _context.next = 2;
-          return (0,_tasks__WEBPACK_IMPORTED_MODULE_7__.createTask)();
+          return (0,_tasks__WEBPACK_IMPORTED_MODULE_6__.createTask)();
         case 2:
           currentTask = _context.sent;
-          return _context.abrupt("return", (0,react_router_dom__WEBPACK_IMPORTED_MODULE_11__.redirect)("/tasks/".concat(currentTask.id, "/edit")));
+          return _context.abrupt("return", (0,react_router_dom__WEBPACK_IMPORTED_MODULE_10__.redirect)("/tasks/".concat(currentTask.id, "/edit")));
         case 4:
         case "end":
           return _context.stop();
@@ -5099,27 +5069,6 @@ function Task() {
   }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h1", null, task !== null && task !== void 0 && task.title ? /*#__PURE__*/React.createElement(React.Fragment, null, task === null || task === void 0 ? void 0 : task.title) : /*#__PURE__*/React.createElement("i", null, "No Title")), /*#__PURE__*/React.createElement("p", null, task !== null && task !== void 0 && task.description ? /*#__PURE__*/React.createElement(React.Fragment, null, task === null || task === void 0 ? void 0 : task.description) : /*#__PURE__*/React.createElement("i", null, "No Description"))));
 }
 /* harmony default export */ __webpack_exports__["default"] = (Task);
-
-/***/ }),
-
-/***/ "./src/store.ts":
-/*!**********************!*\
-  !*** ./src/store.ts ***!
-  \**********************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _reduxjs_toolkit__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @reduxjs/toolkit */ "./node_modules/@reduxjs/toolkit/dist/redux-toolkit.modern.mjs");
-/* harmony import */ var _redux_slice__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./redux/slice */ "./src/redux/slice.ts");
-
-
-var store = (0,_reduxjs_toolkit__WEBPACK_IMPORTED_MODULE_1__.configureStore)({
-  reducer: {
-    slice: _redux_slice__WEBPACK_IMPORTED_MODULE_0__["default"]
-  }
-});
-/* harmony default export */ __webpack_exports__["default"] = (store);
 
 /***/ }),
 
@@ -36263,7 +36212,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_router__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react-router */ "./node_modules/react-router/dist/index.js");
 /* harmony import */ var react_router__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @remix-run/router */ "./node_modules/@remix-run/router/dist/router.js");
 /**
- * React Router DOM v6.22.1
+ * React Router DOM v6.22.2
  *
  * Copyright (c) Remix Software Inc.
  *
@@ -37776,7 +37725,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _remix_run_router__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @remix-run/router */ "./node_modules/@remix-run/router/dist/router.js");
 /**
- * React Router v6.22.1
+ * React Router v6.22.2
  *
  * Copyright (c) Remix Software Inc.
  *
@@ -50350,8 +50299,8 @@ var __webpack_exports__ = {};
   \***********************/
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_dom_client__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react-dom/client */ "./node_modules/react-dom/client.js");
-/* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./store */ "./src/store.ts");
 /* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/dist/react-redux.mjs");
+/* harmony import */ var _redux_store__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./redux/store */ "./src/redux/store.ts");
 /* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/dist/index.js");
 /* harmony import */ var _index_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./index.css */ "./src/index.css");
 /* harmony import */ var _routes__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./routes */ "./src/routes/index.tsx");
@@ -50404,7 +50353,7 @@ var router = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_9__.createBrowserRoute
 }]);
 var root = (0,react_dom_client__WEBPACK_IMPORTED_MODULE_0__.createRoot)(container);
 root.render( /*#__PURE__*/React.createElement(React.StrictMode, null, /*#__PURE__*/React.createElement(react_redux__WEBPACK_IMPORTED_MODULE_10__.Provider, {
-  store: _store__WEBPACK_IMPORTED_MODULE_1__["default"]
+  store: _redux_store__WEBPACK_IMPORTED_MODULE_1__["default"]
 }, /*#__PURE__*/React.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_9__.RouterProvider, {
   router: router
 }))));

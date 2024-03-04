@@ -5,6 +5,7 @@ import {
   useLoaderData,
   useNavigation,
 } from "react-router-dom";
+import NewForm from "../components/forms/NewForm";
 import { matchSorter } from "match-sorter";
 import TaskList from "../components/TaskList";
 import { createTask } from "../tasks";
@@ -34,6 +35,7 @@ const Root = () => {
       <div id="sidebar">
         <div>
           <SearchForm query={q} />
+          <NewForm />
         </div>
         <nav>
           <button onClick={() => setFilter("all")}>Show All</button>

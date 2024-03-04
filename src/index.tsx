@@ -9,6 +9,8 @@ import Root, {
   loader as rootLoader,
   action as rootAction,
 } from "./routes/root";
+import EditTask, { action as editTaskAction } from "./routes/edit";
+
 import Task, { loader as taskLoader } from "./routes/task";
 import { action as completeTaskAction } from "./routes/complete";
 
@@ -34,6 +36,12 @@ const router = createBrowserRouter([
           {
             path: "tasks/:taskId",
             element: <Task />,
+            loader:taskLoader
+          },
+             {
+            path: "tasks/:taskId/edit",
+            element: <EditTask />,
+            action: editTaskAction,
             loader:taskLoader
           },
           {

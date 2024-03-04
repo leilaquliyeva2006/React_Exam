@@ -2,6 +2,7 @@
 import { redirect, RouteProps } from "react-router-dom";
 import { updateTask } from "../tasks";
 import { useParams } from "react-router-dom";
+import EditForm from "../components/forms/EditForm";
 
 type ActionProps = RouteProps & { request: Request };
 
@@ -19,7 +20,11 @@ async function action({ request }: ActionProps) {
   return redirect(`/tasks/${taskId}`);
 }
 
+const EditTask = () => {
+  return <EditForm />;
+};
 
 
 export { action };
 
+export default EditTask;
